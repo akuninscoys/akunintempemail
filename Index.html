@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="id" class="dark"> <!-- Default ke Dark Mode -->
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AKUNIN Temp Email</title>
+    
+    <!-- Font Poppins -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Poppins', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            light: '#60a5fa', 
+                            DEFAULT: '#3b82f6', 
+                            dark: '#2563eb', 
+                        }
+                    },
+                    animation: {
+                        'refresh-bar': 'progress 5s linear infinite',
+                    },
+                    keyframes: {
+                        progress: {
+                            '0%': { width: '0%' },
+                            '100%': { width: '100%' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        .dark ::-webkit-scrollbar-thumb { background: #475569; }
+        
+        /* Animasi Toast */
+        .toast-enter { transform: translateY(100%); opacity: 0; }
+        .toast-active { transform: translateY(0); opacity: 1; }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800 dark:bg-slate-900 dark:text-slate-200 min-h-screen p-4 md:p-8 transition-colors duration-300 selection:bg-brand selection:text-white">
+
+    <!-- Container Utama -->
+    <div class="max-w-4xl mx-auto space-y-6">
+        
+        <!-- HEADER KONTROL EMAIL -->
+        <div class="bg-white dark:bg-slate-800/80 backdrop-blur-md p-6 sm:p-8 rounded-2xl border border-gray-200 dark:border-slate-700/50 shadow-xl relative overflow-hidden transition-colors duration-300">
+            
+            <div class="relative z-10">
+                <!-- Top Bar: Logo Kiri & Dark/Light Mode Kanan -->
+                <div class="flex justify-between items-center mb-8">
+                    <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white flex items-center gap-3 tracking-tight">
+                        <div class="bg-brand/10 dark:bg-brand/20 p-2 sm:p-3 rounded-xl text-brand">
+                            <i class="fa-solid fa-envelope-open-text"></i>
+                        </div>
+                        AKUNIN TEMP EMAIL
+                    </h1>
+                    
+                    <!-- Tombol Toggle Tema -->
+                    <button onclick="toggleTheme()" class="w-10 h-10 rounded-full bg-gray-100 dark:bg-slate-700 flex items-center justify-center text-gray-600 dark:text-yellow-400 hover:scale-110 transition-transform shadow-sm" title="Ganti Tema">
+                        <i id="themeIcon" class="fa-solid fa-moon"></i>
+                    </button>
+                </div>
+                
+                <!-- Display Email Aktif -->
+                <div class="mb-6 relative">
+                    <div class="relative flex items-center bg-gray-50 dark:bg-slate-950 rounded-xl overflow-hidden border border-gray-200 dark:border-slate-800 transition-colors duration-300">
+                        <input type="text" id="currentEmail" readonly class="bg-transparent w-full p-4 sm:p-5 text-emerald-600 dark:text-emerald-400 font-mono text-lg sm:text-xl text-center outline-none" value="Menyiapkan sistem...">
+                        <button onclick="copyEmail()" id="copyBtn" class="absolute right-2 top-2 bottom-2 px-6 bg-brand hover:bg-brand-dark transition-colors duration-300 text-white rounded-lg flex items-center gap-2 font-medium">
+                            <i class="fa-regular fa-copy"></i> <span class="hidden sm:inline">Salin</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Input Custom Email & Acak -->
+                <div class="flex flex-col sm:flex-row gap-4">
+                    <div class="flex-1 flex flex-col sm:flex-row gap-3">
+                        <div class="relative flex-1">
+                            <i class="fa-regular fa-user absolute left-4 top-3.5 text-gray-400 dark:text-slate-500"></i>
+                            <input type="text" id="username" class="w-full bg-gray-50 dark:bg-slate-900 border border-gray-200 dark:border-slate-700 focus:border-brand dark:focus:border-brand rounded-xl pl-11 pr-4 py-3 text-sm focus:outline-none transition-colors" placeholder="Kustom nama email...">
+                        </div>
+                        
+                        <!-- Dropdown Domain (Hanya 1 Opsi) -->
+                        <div class="relative w-full sm:w-2/5">
+                            <select id="domain" class="w-full appearance-none bg-gray-50 dark:bg-slate-900 border border-gray-200 dark:border-slate-700 focus:border-brand rounded-xl px-4 py-3 text-sm focus:outline-none transition-colors cursor-pointer">
+                                <option value="1secmail.com">@1secmail.com</option>
+                            </select>
+                            <i class="fa-solid fa-lock absolute right-4 top-3.5 text-gray-400 dark:text-slate-500 text-xs" title="Hanya 1 domain yang aktif"></i>
+                        </div>
+                    </div>
+                    
+                    <div class="flex gap-3 w-full sm:w-auto">
+                        <button onclick="setCustomEmail()" class="flex-1 sm:flex-none bg-emerald-500 hover:bg-emerald-600 text-white px-6 py-3 rounded-xl text-sm font-semibold transition-all flex items-center justify-center gap-2 shadow-md">
+                            <i class="fa-solid fa-check"></i> <span class="sm:hidden">Setel</span>
+                        </button>
+                        <button onclick="genRandomEmail()" class="flex-1 sm:flex-none bg-gray-200 hover:bg-gray-300 dark:bg-slate-700 dark:hover:bg-slate-600 text-gray-800 dark:text-white px-6 py-3 rounded-xl text-sm font-semibold transition-all flex items-center justify-center gap-2 group">
+                            <i class="fa-solid fa-shuffle group-hover:rotate-180 transition-transform duration-500"></i> Acak
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- AREA KOTAK MASUK & BACA PESAN -->
+        <div class="bg-white dark:bg-slate-800/80 backdrop-blur-md rounded-2xl border border-gray-200 dark:border-slate-700/50 shadow-xl overflow-hidden min-h-[500px] flex flex-col relative transition-colors duration-300">
+            
+            <!-- VIEW 1: DAFTAR KOTAK MASUK -->
+            <div id="inboxView" class="flex-1 flex flex-col transition-opacity duration-300">
+                <div class="p-4 bg-gray-50 dark:bg-slate-800 border-b border-gray-200 dark:border-slate-700/50 flex justify-between items-center relative">
+                    <span class="text-sm font-bold text-gray-700 dark:text-slate-300 uppercase tracking-widest flex items-center gap-2">
+                        <i class="fa-solid fa-inbox text-brand"></i> Kotak Masuk
+                    </span>
+                    <span class="text-xs text-gray-500 dark:text-slate-400 flex items-center gap-2">
+                        Auto-refresh
+                        <div class="w-16 h-1.5 bg-gray-200 dark:bg-slate-700 rounded-full overflow-hidden">
+                            <div class="h-full bg-brand animate-refresh-bar" id="refreshBar"></div>
+                        </div>
+                    </span>
+                </div>
+                <div id="inboxList" class="flex-1 flex flex-col divide-y divide-gray-100 dark:divide-slate-700/50">
+                    <div class="flex-1 flex flex-col items-center justify-center p-10 text-gray-400 dark:text-slate-500">
+                        <i class="fa-regular fa-envelope-open text-5xl mb-4 opacity-50"></i>
+                        <p>Kotak masuk kosong.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- VIEW 2: BACA PESAN -->
+            <div id="readerView" class="hidden flex-1 flex-col absolute inset-0 bg-white dark:bg-slate-800/95 backdrop-blur-md z-20 transition-colors duration-300">
+                <!-- Header Baca Pesan -->
+                <div class="p-4 sm:p-5 border-b border-gray-200 dark:border-slate-700/50 flex items-center gap-4 bg-gray-50 dark:bg-slate-900/50">
+                    <button onclick="closeReader()" class="bg-gray-200 hover:bg-gray-300 dark:bg-slate-700 dark:hover:bg-slate-600 px-4 py-2 rounded-lg text-sm text-gray-800 dark:text-white transition-colors flex items-center gap-2 font-medium shadow-sm">
+                        <i class="fa-solid fa-arrow-left"></i> Kembali
+                    </button>
+                    <div class="flex-1 min-w-0">
+                        <h2 id="msgSubject" class="font-bold text-gray-900 dark:text-slate-100 truncate text-lg">Subjek</h2>
+                    </div>
+                </div>
+                <!-- Info Pengirim -->
+                <div class="px-5 py-4 border-b border-gray-100 dark:border-slate-700/30 bg-white dark:bg-slate-800">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between text-sm gap-2">
+                        <div class="flex items-center gap-3 overflow-hidden">
+                            <div class="w-8 h-8 rounded-full bg-brand/10 dark:bg-brand/20 flex items-center justify-center text-brand font-bold shrink-0">
+                                <i class="fa-regular fa-user"></i>
+                            </div>
+                            <p class="truncate text-gray-600 dark:text-slate-300">Dari: <span id="msgFrom" class="text-brand font-medium">pengirim@email.com</span></p>
+                        </div>
+                        <p id="msgDate" class="text-xs sm:text-sm text-gray-500 dark:text-slate-500 pl-11 sm:pl-0"><i class="fa-regular fa-calendar mr-1"></i> Tanggal</p>
+                    </div>
+                </div>
+                <!-- Isi Pesan (Iframe) - Selalu berlatar putih agar HTML email terbaca jelas -->
+                <div class="flex-1 bg-white relative">
+                    <iframe id="msgBody" class="absolute inset-0 w-full h-full border-0" sandbox="allow-same-origin"></iframe>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Custom Toast Notification -->
+    <div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 px-6 py-3 rounded-full text-white text-sm font-medium shadow-xl transition-all duration-300 toast-enter flex items-center gap-2 z-50 pointer-events-none">
+        <i class="fa-solid fa-circle-info"></i> <span id="toastMsg">Notifikasi</span>
+    </div>
+
+    <script>
+        let currentEmail = "";
+        let username = "";
+        let domain = "1secmail.com";
+        let checkInterval;
+
+        // --- SISTEM TEMA (Dark/Light) ---
+        function initTheme() {
+            const html = document.documentElement;
+            const icon = document.getElementById('themeIcon');
+            
+            if (localStorage.theme === 'light') {
+                html.classList.remove('dark');
+                icon.className = 'fa-solid fa-moon';
+            } else {
+                html.classList.add('dark');
+                icon.className = 'fa-solid fa-sun';
+            }
+        }
+
+        function toggleTheme() {
+            const html = document.documentElement;
+            const icon = document.getElementById('themeIcon');
+            
+            if (html.classList.contains('dark')) {
+                html.classList.remove('dark');
+                localStorage.theme = 'light';
+                icon.className = 'fa-solid fa-moon';
+            } else {
+                html.classList.add('dark');
+                localStorage.theme = 'dark';
+                icon.className = 'fa-solid fa-sun';
+            }
+        }
+        initTheme(); // Panggil saat load
+
+        // --- SISTEM TOAST (Notifikasi) ---
+        let toastTimeout;
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            document.getElementById('toastMsg').textContent = message;
+            
+            if(type === 'error') {
+                toast.className = "fixed bottom-6 left-1/2 -translate-x-1/2 px-6 py-3 rounded-full text-white text-sm font-medium shadow-xl bg-red-500 transition-all duration-300 flex items-center gap-2 z-50 toast-active";
+                toast.innerHTML = `<i class="fa-solid fa-circle-exclamation"></i> <span>${message}</span>`;
+            } else {
+                toast.className = "fixed bottom-6 left-1/2 -translate-x-1/2 px-6 py-3 rounded-full text-white text-sm font-medium shadow-xl bg-gray-900 dark:bg-slate-700 transition-all duration-300 flex items-center gap-2 z-50 toast-active";
+                toast.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-400"></i> <span>${message}</span>`;
+            }
+
+            clearTimeout(toastTimeout);
+            toastTimeout = setTimeout(() => {
+                toast.classList.remove('toast-active');
+                toast.classList.add('toast-enter');
+            }, 3000);
+        }
+
+        // --- LOGIKA EMAIL ---
+        async function genRandomEmail() {
+            try {
+                const res = await fetch('https://www.1secmail.com/api/v1/?action=genRandomMailbox&count=1');
+                const data = await res.json();
+                updateEmailUI(data[0]);
+                showToast("Email acak berhasil dibuat!");
+            } catch (error) {
+                showToast("Gagal menyambung ke server.", "error");
+            }
+        }
+
+        function setCustomEmail() {
+            const inputUser = document.getElementById('username').value.replace(/[^a-zA-Z0-9.-]/g, '').toLowerCase(); 
+            const inputDomain = document.getElementById('domain').value;
+            
+            if (inputUser === "") {
+                showToast("Nama email tidak boleh kosong!", "error");
+                document.getElementById('username').focus();
+                return;
+            }
+            
+            updateEmailUI(`${inputUser}@${inputDomain}`);
+            showToast(`Email diganti: ${inputUser}@${inputDomain}`);
+        }
+
+        function updateEmailUI(emailStr) {
+            currentEmail = emailStr;
+            [username, domain] = currentEmail.split('@');
+            
+            document.getElementById('currentEmail').value = currentEmail;
+            document.getElementById('username').value = username;
+            
+            resetInbox();
+            closeReader();
+
+            // Mulai Auto Refresh Tanpa Henti
+            startAutoRefresh();
+        }
+
+        function copyEmail() {
+            const el = document.getElementById('currentEmail');
+            el.select();
+            document.execCommand('copy');
+            
+            showToast("Alamat email disalin!");
+            
+            const btn = document.getElementById('copyBtn');
+            const originalHtml = btn.innerHTML;
+            btn.innerHTML = '<i class="fa-solid fa-check"></i> <span class="hidden sm:inline">Disalin</span>';
+            btn.classList.add('bg-emerald-500');
+            btn.classList.remove('bg-brand');
+            
+            setTimeout(() => {
+                btn.innerHTML = originalHtml;
+                btn.classList.remove('bg-emerald-500');
+                btn.classList.add('bg-brand');
+            }, 2000);
+        }
+
+        function resetInbox() {
+            document.getElementById('inboxList').innerHTML = `
+                <div class="flex-1 flex flex-col items-center justify-center p-10 text-gray-400 dark:text-slate-500">
+                    <i class="fa-regular fa-envelope-open text-5xl mb-4 opacity-50"></i>
+                    <p>Menunggu email masuk...</p>
+                </div>`;
+        }
+
+        function restartAnimation() {
+            const bar = document.getElementById('refreshBar');
+            bar.classList.remove('animate-refresh-bar');
+            void bar.offsetWidth; // Trigger reflow
+            bar.classList.add('animate-refresh-bar');
+        }
+
+        function startAutoRefresh() {
+            clearInterval(checkInterval);
+            checkInbox(); // Cek langsung pertama kali
+            
+            // Loop 5 detik terus menerus tanpa henti
+            checkInterval = setInterval(() => {
+                checkInbox();
+                restartAnimation(); // Restart animasi bar kecil
+            }, 5000); 
+        }
+
+        async function checkInbox() {
+            if (!username) return;
+            
+            try {
+                const res = await fetch(`https://www.1secmail.com/api/v1/?action=getMessages&login=${username}&domain=${domain}`);
+                const messages = await res.json();
+                const inboxEl = document.getElementById('inboxList');
+                
+                if (messages.length === 0) {
+                    resetInbox();
+                } else {
+                    inboxEl.innerHTML = messages.map(msg => `
+                        <div onclick="readEmail(${msg.id})" class="p-4 sm:p-5 hover:bg-gray-50 dark:hover:bg-slate-700/30 cursor-pointer transition-colors flex flex-col sm:flex-row sm:items-center justify-between gap-3 group border-l-4 border-transparent hover:border-brand">
+                            <div class="flex items-start gap-4 flex-1 min-w-0">
+                                <div class="mt-1 w-2 h-2 rounded-full bg-brand shadow-[0_0_8px_rgba(59,130,246,0.6)]"></div>
+                                <div class="flex-1 min-w-0">
+                                    <div class="font-semibold text-gray-800 dark:text-slate-200 truncate mb-1 group-hover:text-brand transition-colors">${msg.from}</div>
+                                    <div class="text-sm text-gray-500 dark:text-slate-400 truncate">${msg.subject || "(Tanpa Subjek)"}</div>
+                                </div>
+                            </div>
+                            <div class="text-xs text-gray-400 dark:text-slate-500 whitespace-nowrap pl-6 sm:pl-0 font-medium">
+                                ${msg.date.split(' ')[1]}
+                            </div>
+                        </div>
+                    `).join('');
+                }
+            } catch (error) {
+                console.error("Gagal refresh inbox");
+            }
+        }
+
+        async function readEmail(id) {
+            showToast("Membuka pesan...");
+
+            try {
+                const res = await fetch(`https://www.1secmail.com/api/v1/?action=readMessage&login=${username}&domain=${domain}&id=${id}`);
+                const message = await res.json();
+
+                // Buka Panel Reader
+                document.getElementById('readerView').classList.remove('hidden');
+                document.getElementById('readerView').classList.add('flex');
+
+                // Tulis Detail
+                document.getElementById('msgSubject').textContent = message.subject || "(Tanpa Subjek)";
+                document.getElementById('msgFrom').textContent = message.from;
+                document.getElementById('msgDate').textContent = message.date;
+
+                // Frame Konten (Diberi bg putih untuk iframe walau di darkmode agar HTML email normal)
+                const iframe = document.getElementById('msgBody');
+                const content = message.htmlBody || `<div style="font-family:sans-serif; padding:20px; color:#333;">${message.textBody}</div>`;
+                iframe.srcdoc = content;
+
+            } catch (error) {
+                showToast("Gagal memuat isi pesan.", "error");
+            }
+            
+            // Catatan: checkInterval TIDAK dihentikan di sini, 
+            // sehingga list inbox di background akan terus ter-update!
+        }
+
+        function closeReader() {
+            document.getElementById('readerView').classList.add('hidden');
+            document.getElementById('readerView').classList.remove('flex');
+            document.getElementById('msgBody').srcdoc = ""; 
+        }
+
+        // Mulai saat web pertama kali dibuka
+        genRandomEmail();
+    </script>
+</body>
+</html>

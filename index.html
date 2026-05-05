@@ -25,12 +25,22 @@
         .toast-active { transform: translateY(0); opacity: 1; }
         .toast-enter { transform: translateY(-100%); opacity: 0; }
         iframe { background: white; width: 100%; height: 100%; border: none; }
-        .modal-overlay { background: rgba(0,0,0,0.7); backdrop-filter: blur(4px); }
-        /* Perbaikan Light Mode agar base tidak nyaru */
-        .light #setupView, .light #activeView > div, .light #modal > div { 
-            background-color: #f1f5f9 !important; 
-            border-color: #cbd5e1 !important;
+        .modal-overlay { background: rgba(0,0,0,0.8); backdrop-filter: blur(8px); }
+        
+        /* Custom Select Styling - Menghilangkan tampilan default browser */
+        select {
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
         }
+
+        /* Perbaikan Light Mode agar base tidak nyaru dengan background */
+        .light #setupView, .light #activeView > div, .light #modal > div { 
+            background-color: #e2e8f0 !important; /* Abu-abu lebih gelap agar kontras */
+            border-color: #cbd5e1 !important;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+        .light body { background-color: #f8fafc; }
     </style>
 </head>
 <body class="bg-slate-50 text-slate-800 dark:bg-[#0a0f1e] dark:text-slate-200 min-h-screen p-3 md:p-8 transition-colors duration-300">
@@ -48,26 +58,35 @@
         </div>
 
         <!-- MODE 1: SETUP VIEW -->
-        <div id="setupView" class="bg-white dark:bg-[#161b2c] border border-slate-200 dark:border-slate-800 p-6 rounded-3xl shadow-2xl space-y-6">
+        <div id="setupView" class="bg-white dark:bg-[#161b2c] border border-slate-200 dark:border-slate-800 p-6 md:p-10 rounded-[2.5rem] shadow-2xl space-y-8">
             <div class="text-center space-y-2">
-                <h2 class="text-lg font-bold">Buat Alamat Email Baru</h2>
-                <p class="text-[10px] uppercase tracking-[0.2em] text-slate-500 font-bold">Premium Temporary Mail</p>
+                <h2 class="text-xl font-bold">Buat Alamat Email Baru</h2>
+                <p class="text-[10px] uppercase tracking-[0.2em] text-slate-500 font-black">Premium Business Domain</p>
             </div>
             
-            <div class="flex flex-col gap-3">
-                <div class="flex gap-2">
-                    <input type="text" id="username" class="flex-1 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-2xl px-4 py-4 outline-none focus:border-brand text-sm transition-all" placeholder="Username...">
-                    <select id="domain" class="w-2/5 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-2xl px-2 py-4 outline-none text-[11px] font-bold cursor-pointer">
+            <div class="flex flex-col gap-4">
+                <!-- Username Input -->
+                <div class="relative group">
+                    <i class="fa-regular fa-user absolute left-5 top-5 text-slate-400 group-focus-within:text-brand transition-colors"></i>
+                    <input type="text" id="username" class="w-full bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-2xl pl-12 pr-4 py-4 outline-none focus:border-brand focus:ring-2 focus:ring-brand/10 text-sm font-medium transition-all" placeholder="Masukkan username pilihanmu...">
+                </div>
+
+                <!-- Custom Domain Dropdown -->
+                <div class="relative">
+                    <i class="fa-solid fa-globe absolute left-5 top-5 text-slate-400"></i>
+                    <select id="domain" class="w-full bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-2xl pl-12 pr-12 py-4 outline-none focus:border-brand text-sm font-bold cursor-pointer transition-all">
                         <option value="akunin.my.id">@akunin.my.id</option>
                         <option value="akunin.biz.id">@akunin.biz.id</option>
                     </select>
+                    <i class="fa-solid fa-chevron-down absolute right-5 top-5 text-slate-400 pointer-events-none"></i>
                 </div>
-                <div class="grid grid-cols-2 gap-3">
-                    <button onclick="startSession()" class="bg-brand hover:bg-brand-dark text-white py-4 rounded-2xl font-bold text-sm shadow-xl shadow-brand/20 transition-all active:scale-95 flex items-center justify-center gap-2">
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3 pt-2">
+                    <button onclick="startSession()" class="bg-brand hover:bg-brand-dark text-white py-4 rounded-2xl font-bold text-sm shadow-xl shadow-brand/20 transition-all active:scale-95 flex items-center justify-center gap-2 order-1 md:order-1">
                         <i class="fa-solid fa-magic-wand-sparkles"></i> Buat Email
                     </button>
-                    <button onclick="genRandomEmail()" class="bg-slate-100 dark:bg-slate-800 py-4 rounded-2xl font-bold text-sm transition-all active:scale-95 flex items-center justify-center gap-2">
-                        <i class="fa-solid fa-shuffle"></i> Acak
+                    <button onclick="genRandomEmail()" class="bg-slate-200 dark:bg-slate-800 py-4 rounded-2xl font-bold text-sm transition-all active:scale-95 flex items-center justify-center gap-2 order-2 md:order-2">
+                        <i class="fa-solid fa-shuffle"></i> Nama Acak
                     </button>
                 </div>
             </div>
@@ -75,30 +94,30 @@
 
         <!-- MODE 2: ACTIVE INBOX VIEW -->
         <div id="activeView" class="hidden space-y-6">
-            <div class="bg-white dark:bg-[#161b2c] border border-slate-200 dark:border-slate-800 p-6 rounded-3xl shadow-lg relative overflow-hidden">
-                <div class="text-center mb-6">
-                    <p class="text-[9px] uppercase tracking-[0.3em] text-slate-500 mb-2 font-black opacity-60">Email Aktif</p>
-                    <h2 id="displayEmail" class="text-lg md:text-2xl font-mono font-bold text-brand break-all">...</h2>
+            <div class="bg-white dark:bg-[#161b2c] border border-slate-200 dark:border-slate-800 p-6 rounded-[2.5rem] shadow-lg relative overflow-hidden">
+                <div class="text-center mb-8">
+                    <p class="text-[9px] uppercase tracking-[0.3em] text-slate-500 mb-2 font-black opacity-60">Sesi Aktif</p>
+                    <h2 id="displayEmail" class="text-lg md:text-2xl font-mono font-bold text-brand break-all px-2">...</h2>
                 </div>
                 
-                <div class="grid grid-cols-4 gap-2">
-                    <button onclick="copyEmail()" class="bg-slate-50 dark:bg-slate-800/50 p-3 rounded-2xl text-[10px] font-bold border border-slate-200 dark:border-transparent flex flex-col items-center gap-2 hover:bg-brand hover:text-white transition-all active:scale-90">
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+                    <button onclick="copyEmail()" class="bg-slate-100 dark:bg-slate-800/50 p-4 rounded-2xl text-[10px] font-bold border border-slate-200 dark:border-transparent flex flex-col items-center gap-2 hover:bg-brand hover:text-white transition-all active:scale-90">
                         <i class="fa-regular fa-copy text-xl"></i> Salin
                     </button>
-                    <button onclick="manualRefresh()" class="bg-slate-50 dark:bg-slate-800/50 p-3 rounded-2xl text-[10px] font-bold border border-slate-200 dark:border-transparent flex flex-col items-center gap-2 hover:bg-brand hover:text-white transition-all active:scale-90">
+                    <button onclick="manualRefresh()" class="bg-slate-100 dark:bg-slate-800/50 p-4 rounded-2xl text-[10px] font-bold border border-slate-200 dark:border-transparent flex flex-col items-center gap-2 hover:bg-brand hover:text-white transition-all active:scale-90">
                         <i class="fa-solid fa-arrows-rotate text-xl"></i> Refresh
                     </button>
-                    <button onclick="openConfirm('new')" class="bg-slate-50 dark:bg-slate-800/50 p-3 rounded-2xl text-[10px] font-bold border border-slate-200 dark:border-transparent flex flex-col items-center gap-2 hover:bg-emerald-500 hover:text-white transition-all active:scale-90">
+                    <button onclick="openConfirm('new')" class="bg-slate-100 dark:bg-slate-800/50 p-4 rounded-2xl text-[10px] font-bold border border-slate-200 dark:border-transparent flex flex-col items-center gap-2 hover:bg-emerald-500 hover:text-white transition-all active:scale-90">
                         <i class="fa-solid fa-plus-square text-xl"></i> New
                     </button>
-                    <button onclick="openConfirm('delete')" class="bg-slate-50 dark:bg-slate-800/50 p-3 rounded-2xl text-[10px] font-bold border border-slate-200 dark:border-transparent flex flex-col items-center gap-2 hover:bg-red-500 hover:text-white transition-all active:scale-90">
+                    <button onclick="openConfirm('delete')" class="bg-slate-100 dark:bg-slate-800/50 p-4 rounded-2xl text-[10px] font-bold border border-slate-200 dark:border-transparent flex flex-col items-center gap-2 hover:bg-red-500 hover:text-white transition-all active:scale-90">
                         <i class="fa-solid fa-trash-can text-xl"></i> Delete
                     </button>
                 </div>
             </div>
 
-            <div class="bg-white dark:bg-[#161b2c] border border-slate-200 dark:border-slate-800 rounded-3xl shadow-xl min-h-[450px] flex flex-col overflow-hidden relative">
-                <div class="p-4 border-b border-slate-200 dark:border-slate-800 flex justify-between items-center bg-slate-50/30 dark:bg-slate-900/30">
+            <div class="bg-white dark:bg-[#161b2c] border border-slate-200 dark:border-slate-800 rounded-[2.5rem] shadow-xl min-h-[450px] flex flex-col overflow-hidden relative">
+                <div class="p-5 border-b border-slate-200 dark:border-slate-800 flex justify-between items-center bg-slate-50/50 dark:bg-slate-900/30">
                     <span class="text-[10px] font-black uppercase tracking-widest flex items-center gap-2"><i class="fa-solid fa-inbox text-brand"></i> Kotak Masuk</span>
                     <div id="autoRefreshIndicator" class="w-20 h-1 bg-slate-200 dark:bg-slate-800 rounded-full overflow-hidden">
                         <div class="h-full bg-brand animate-[progress_3s_linear_infinite]" id="refreshBar"></div>
@@ -109,10 +128,10 @@
                 <!-- READER VIEW -->
                 <div id="readerView" class="hidden absolute inset-0 bg-white dark:bg-[#0a0f1e] z-50 flex flex-col">
                     <div class="p-4 border-b border-slate-200 dark:border-slate-800 flex items-center gap-3">
-                        <button onclick="closeReader()" class="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-all"><i class="fa-solid fa-arrow-left"></i></button>
-                        <h2 id="msgSubject" class="font-bold truncate text-sm flex-1">...</h2>
+                        <button onclick="closeReader()" class="w-10 h-10 flex items-center justify-center hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-all"><i class="fa-solid fa-arrow-left"></i></button>
+                        <h2 id="msgSubject" class="font-bold truncate text-sm flex-1 px-2">...</h2>
                     </div>
-                    <div class="p-4 text-[11px] border-b border-slate-200 dark:border-slate-800 flex flex-col gap-1 bg-slate-50 dark:bg-slate-900/50">
+                    <div class="p-5 text-[11px] border-b border-slate-200 dark:border-slate-800 flex flex-col gap-1 bg-slate-50 dark:bg-slate-900/50">
                         <p class="text-slate-400">Dari: <span id="msgFrom" class="text-brand font-bold">...</span></p>
                         <p class="text-slate-500 font-mono" id="msgDate">...</p>
                     </div>
@@ -126,22 +145,22 @@
 
     <!-- MODAL CUSTOM -->
     <div id="modal" class="hidden fixed inset-0 z-[200] modal-overlay flex items-center justify-center p-4">
-        <div class="bg-white dark:bg-[#161b2c] border border-slate-200 dark:border-slate-800 w-full max-w-sm rounded-[2rem] p-6 shadow-2xl text-center space-y-6 scale-95 transition-transform duration-300">
-            <div id="modalIcon" class="w-16 h-16 rounded-full mx-auto flex items-center justify-center text-2xl"></div>
+        <div class="bg-white dark:bg-[#161b2c] border border-slate-200 dark:border-slate-800 w-full max-w-sm rounded-[2.5rem] p-8 shadow-2xl text-center space-y-6 scale-95 transition-transform duration-300">
+            <div id="modalIcon" class="w-20 h-20 rounded-full mx-auto flex items-center justify-center text-3xl"></div>
             <div class="space-y-2">
-                <h3 id="modalTitle" class="font-bold text-lg">Konfirmasi</h3>
-                <p id="modalDesc" class="text-xs text-slate-500 leading-relaxed"></p>
+                <h3 id="modalTitle" class="font-black text-xl">Konfirmasi</h3>
+                <p id="modalDesc" class="text-sm text-slate-500 leading-relaxed px-4"></p>
             </div>
-            <div class="flex gap-3">
-                <button onclick="closeModal()" class="flex-1 py-3 rounded-xl font-bold text-xs bg-slate-100 dark:bg-slate-800 transition-all border border-slate-200 dark:border-transparent">Batal</button>
-                <button id="modalConfirmBtn" class="flex-1 py-3 rounded-xl font-bold text-xs text-white transition-all shadow-lg"></button>
+            <div class="flex flex-col gap-2 pt-2">
+                <button id="modalConfirmBtn" class="w-full py-4 rounded-2xl font-bold text-sm text-white transition-all shadow-lg"></button>
+                <button onclick="closeModal()" class="w-full py-4 rounded-2xl font-bold text-sm bg-slate-100 dark:bg-slate-800 transition-all border border-slate-200 dark:border-transparent">Batalkan</button>
             </div>
         </div>
     </div>
 
-    <!-- TOAST (PINDAH KE ATAS + WARNA KONTRAS) -->
-    <div id="toast" class="fixed top-6 left-1/2 -translate-x-1/2 px-6 py-3 rounded-2xl text-white text-[11px] font-bold shadow-2xl transition-all duration-300 toast-enter z-[300] flex items-center gap-2 pointer-events-none">
-        <i class="fa-solid fa-bell"></i> <span id="toastMsg"></span>
+    <!-- TOAST (ATAS + KONTRAS) -->
+    <div id="toast" class="fixed top-6 left-1/2 -translate-x-1/2 px-8 py-4 rounded-2xl text-white text-[11px] font-black shadow-2xl transition-all duration-300 toast-enter z-[300] flex items-center gap-3 pointer-events-none">
+        <i class="fa-solid fa-circle-check"></i> <span id="toastMsg"></span>
     </div>
 
     <script>
@@ -150,16 +169,14 @@
         let checkInterval;
         let nameDictionary = { prefixes: [], suffixes: [] };
 
-        // Muat Kamus Nama dari GitHub Docs (Lokal/Folder yang sama)
         async function loadDictionary() {
             try {
                 const response = await fetch('./names.json');
                 nameDictionary = await response.json();
             } catch (e) {
-                // Backup jika file JSON belum ada di github
                 nameDictionary = { 
-                    prefixes: ['agus', 'siti', 'budi', 'putri', 'david', 'clara', 'bayu', 'dian'], 
-                    suffixes: ['saputra', 'wijaya', 'lestari', 'permata', 'smith', 'lee'] 
+                    prefixes: ['agus', 'siti', 'budi', 'putri', 'david', 'clara', 'bayu', 'dian', 'rizky', 'ani'], 
+                    suffixes: ['saputra', 'wijaya', 'lestari', 'permata', 'smith', 'lee', 'hidayat', 'jaya'] 
                 };
             }
         }
@@ -174,11 +191,10 @@
         function showToast(msg, type = 'success') {
             const t = document.getElementById('toast');
             document.getElementById('toastMsg').innerText = msg;
-            // Gunakan warna kontras yang berbeda dari base
             if(type === 'error') {
-                t.className = `fixed top-6 left-1/2 -translate-x-1/2 px-6 py-3 rounded-2xl text-white text-[11px] font-bold shadow-2xl transition-all duration-300 z-[300] flex items-center gap-2 toast-active bg-rose-600`;
+                t.className = `fixed top-6 left-1/2 -translate-x-1/2 px-8 py-4 rounded-2xl text-white text-[11px] font-black shadow-2xl transition-all duration-300 z-[300] flex items-center gap-3 toast-active bg-rose-600`;
             } else {
-                t.className = `fixed top-6 left-1/2 -translate-x-1/2 px-6 py-3 rounded-2xl text-white text-[11px] font-bold shadow-2xl transition-all duration-300 z-[300] flex items-center gap-2 toast-active bg-indigo-600`;
+                t.className = `fixed top-6 left-1/2 -translate-x-1/2 px-8 py-4 rounded-2xl text-white text-[11px] font-black shadow-2xl transition-all duration-300 z-[300] flex items-center gap-3 toast-active bg-indigo-600`;
             }
             setTimeout(() => t.classList.replace('toast-active', 'toast-enter'), 3000);
         }
@@ -194,20 +210,20 @@
             setTimeout(() => modal.children[0].classList.add('scale-100'), 10);
 
             if(type === 'new') {
-                icon.className = "w-16 h-16 rounded-full mx-auto flex items-center justify-center text-2xl bg-emerald-100 dark:bg-emerald-500/20 text-emerald-500";
-                icon.innerHTML = '<i class="fa-solid fa-plus"></i>';
-                title.innerText = "Buka Email Baru?";
-                desc.innerText = "Email saat ini akan tetap aktif, namun kamu bisa membuat alamat baru untuk keperluan lain.";
-                btn.innerText = "Buat Baru";
-                btn.className = "flex-1 py-3 rounded-xl font-bold text-xs text-white bg-emerald-500 shadow-emerald-500/20";
+                icon.className = "w-20 h-20 rounded-full mx-auto flex items-center justify-center text-3xl bg-emerald-100 dark:bg-emerald-500/20 text-emerald-500";
+                icon.innerHTML = '<i class="fa-solid fa-plus-circle"></i>';
+                title.innerText = "Email Baru?";
+                desc.innerText = "Sesi ini akan ditutup dan kamu bisa membuat alamat baru. Alamat lama tetap aman.";
+                btn.innerText = "Konfirmasi, Buat Baru";
+                btn.className = "w-full py-4 rounded-2xl font-bold text-sm text-white bg-emerald-500 shadow-xl shadow-emerald-500/20";
                 btn.onclick = () => { currentEmail = ""; localStorage.removeItem('last_akunin_email'); renderView(); closeModal(); };
             } else {
-                icon.className = "w-16 h-16 rounded-full mx-auto flex items-center justify-center text-2xl bg-red-100 dark:bg-red-500/20 text-red-500";
-                icon.innerHTML = '<i class="fa-solid fa-trash-can"></i>';
-                title.innerText = "Hapus Permanen?";
-                desc.innerText = "Seluruh pesan akan hilang selamanya dan alamat email ini akan tersedia kembali untuk orang lain.";
-                btn.innerText = "Hapus Sesi";
-                btn.className = "flex-1 py-3 rounded-xl font-bold text-xs text-white bg-red-500 shadow-red-500/20";
+                icon.className = "w-20 h-20 rounded-full mx-auto flex items-center justify-center text-3xl bg-red-100 dark:bg-red-500/20 text-red-500";
+                icon.innerHTML = '<i class="fa-solid fa-trash-alt"></i>';
+                title.innerText = "Hapus Total?";
+                desc.innerText = "Semua pesan akan dihapus dan email ini bisa digunakan orang lain. Tindakan ini permanen.";
+                btn.innerText = "Hapus Sesi Sekarang";
+                btn.className = "w-full py-4 rounded-2xl font-bold text-sm text-white bg-red-500 shadow-xl shadow-red-500/20";
                 btn.onclick = deleteSession;
             }
         }
@@ -219,7 +235,6 @@
 
         function genRandomEmail() {
             if (nameDictionary.prefixes.length === 0) {
-                // Fallback jika dictionary belum load
                 document.getElementById('username').value = Math.random().toString(36).substring(2, 10);
                 return;
             }
@@ -235,23 +250,23 @@
             else {
                 const u = document.getElementById('username').value.trim().toLowerCase().replace(/[^a-z0-9]/g, '');
                 const d = document.getElementById('domain').value;
-                if (!u) return showToast("Isi username!", "error");
+                if (!u) return showToast("Username wajib diisi!", "error");
                 target = `${u}@${d}`;
             }
 
             if (!forceEmail && target !== localStorage.getItem('last_akunin_email')) {
-                showToast("Mengecek ketersediaan...");
+                showToast("Sedang mendaftarkan...");
                 try {
                     const res = await fetch(`${WORKER_URL}?action=lock&email=${target}`);
                     const data = await res.json();
-                    if (data.status === "taken") return showToast("Email sudah digunakan!", "error");
-                } catch (e) { return showToast("Gagal koneksi", "error"); }
+                    if (data.status === "taken") return showToast("Username sudah terpakai!", "error");
+                } catch (e) { return showToast("Koneksi server terputus", "error"); }
             }
 
             currentEmail = target;
             localStorage.setItem('last_akunin_email', currentEmail);
             renderView();
-            showToast("Kotak masuk aktif!");
+            showToast("Email Berhasil Aktif!");
         }
 
         function renderView() {
@@ -269,19 +284,18 @@
 
         async function deleteSession() {
             try {
-                showToast("Menghapus sesi...");
+                showToast("Menghapus database...");
                 await fetch(`${WORKER_URL}?action=delete&email=${currentEmail}`);
                 currentEmail = "";
                 localStorage.removeItem('last_akunin_email');
                 renderView();
                 closeModal();
-            } catch (e) { showToast("Gagal hapus", "error"); }
+            } catch (e) { showToast("Gagal menghapus sesi", "error"); }
         }
 
         function manualRefresh() {
-            showToast("Mengecek pesan...");
+            showToast("Memperbarui pesan...");
             checkInbox();
-            // Reset animasi bar
             const bar = document.querySelector('#autoRefreshIndicator div');
             bar.style.animation = 'none';
             void bar.offsetWidth; 
@@ -300,15 +314,15 @@
                 const m = await res.json();
                 const list = document.getElementById('inboxList');
                 if (m.length === 0) {
-                    list.innerHTML = `<div class="flex flex-col items-center justify-center h-64 text-slate-500 animate-pulse"><i class="fa-solid fa-spinner fa-spin text-xl mb-3"></i><p class="text-[10px] font-black uppercase tracking-widest text-center px-4">Mencari Pesan Baru...<br><span class="opacity-50 font-normal">Mungkin membutuhkan waktu 1 menit</span></p></div>`;
+                    list.innerHTML = `<div class="flex flex-col items-center justify-center h-64 text-slate-500 animate-pulse"><i class="fa-solid fa-spinner fa-spin text-xl mb-4 text-brand"></i><p class="text-[10px] font-black uppercase tracking-widest text-center px-6 leading-relaxed">Menunggu Pesan Baru...<br><span class="opacity-50 font-normal">Sistem mengecek secara otomatis setiap 3 detik</span></p></div>`;
                 } else {
                     list.innerHTML = m.map(msg => `
-                        <div onclick="readEmail('${msg.id}')" class="p-4 hover:bg-brand/5 cursor-pointer flex justify-between items-center transition-all border-l-4 border-transparent hover:border-brand bg-white dark:bg-transparent">
+                        <div onclick="readEmail('${msg.id}')" class="p-5 hover:bg-brand/5 cursor-pointer flex justify-between items-center transition-all border-l-4 border-transparent hover:border-brand bg-white dark:bg-transparent">
                             <div class="min-w-0 flex-1">
-                                <p class="text-brand font-black text-[10px] truncate uppercase mb-1">${msg.from}</p>
-                                <p class="text-[12px] font-bold truncate dark:text-slate-100">${msg.subject}</p>
+                                <p class="text-brand font-black text-[10px] truncate uppercase mb-1 tracking-tight">${msg.from}</p>
+                                <p class="text-[13px] font-bold truncate dark:text-slate-100">${msg.subject}</p>
                             </div>
-                            <span class="text-[9px] text-slate-400 font-mono ml-4 shrink-0">${msg.date.split(',')[0]}</span>
+                            <span class="text-[9px] text-slate-400 font-mono ml-4 shrink-0 font-bold">${msg.date.split(',')[0]}</span>
                         </div>
                     `).join('');
                 }
@@ -316,7 +330,7 @@
         }
 
         async function readEmail(id) {
-            showToast("Membuka...");
+            showToast("Memuat isi pesan...");
             try {
                 const res = await fetch(`${WORKER_URL}?email=${currentEmail}`);
                 const m = await res.json();
@@ -325,16 +339,15 @@
                 document.getElementById('msgSubject').innerText = det.subject;
                 document.getElementById('msgFrom').innerText = det.from;
                 document.getElementById('msgDate').innerText = det.date;
-                document.getElementById('msgBody').srcdoc = `<html><head><style>body{font-family:sans-serif;margin:15px;line-height:1.5;font-size:14px;color:#333;background:#fff}img{max-width:100%;height:auto;}</style></head><body>${det.html}</body></html>`;
-            } catch (e) { showToast("Gagal muat", "error"); }
+                document.getElementById('msgBody').srcdoc = `<html><head><style>body{font-family:sans-serif;margin:15px;line-height:1.6;font-size:14px;color:#333;background:#fff}img{max-width:100%;height:auto;}</style></head><body>${det.html}</body></html>`;
+            } catch (e) { showToast("Konten gagal dimuat", "error"); }
         }
 
         function closeReader() { document.getElementById('readerView').classList.add('hidden'); }
-        function copyEmail() { navigator.clipboard.writeText(currentEmail); showToast("Email Disalin!"); }
+        function copyEmail() { navigator.clipboard.writeText(currentEmail); showToast("Alamat Berhasil Disalin!"); }
 
         window.onload = () => {
             loadDictionary();
-            // Perbaikan Fatal: Routing menggunakan /mailbox/
             const path = window.location.pathname;
             if (path.startsWith('/mailbox/')) {
                 let raw = decodeURIComponent(path.split('/mailbox/')[1]);

@@ -97,12 +97,16 @@
                             <input type="text" id="username" class="w-full bg-gray-50 dark:bg-slate-900 border border-gray-200 dark:border-slate-700 focus:border-brand dark:focus:border-brand rounded-xl pl-11 pr-4 py-3 text-sm focus:outline-none transition-colors" placeholder="Kustom nama email...">
                         </div>
                         
-                        <!-- Dropdown Domain (Hanya 1 Opsi) -->
+                        <!-- Dropdown Domain (Ditambahkan domain kustom) -->
                         <div class="relative w-full sm:w-2/5">
                             <select id="domain" class="w-full appearance-none bg-gray-50 dark:bg-slate-900 border border-gray-200 dark:border-slate-700 focus:border-brand rounded-xl px-4 py-3 text-sm focus:outline-none transition-colors cursor-pointer">
-                                <option value="1secmail.com">@1secmail.com</option>
+                                <option value="akunin.my.id">@akunin.my.id</option>
+                                <option value="akunin.biz.id">@akunin.biz.id</option>
+                                <option value="1secmail.com" selected>@1secmail.com</option>
+                                <option value="1secmail.org">@1secmail.org</option>
+                                <option value="1secmail.net">@1secmail.net</option>
                             </select>
-                            <i class="fa-solid fa-lock absolute right-4 top-3.5 text-gray-400 dark:text-slate-500 text-xs" title="Hanya 1 domain yang aktif"></i>
+                            <i class="fa-solid fa-chevron-down absolute right-4 top-4 text-gray-400 dark:text-slate-500 text-xs"></i>
                         </div>
                     </div>
                     
@@ -237,15 +241,12 @@
         }
 
         // --- LOGIKA EMAIL ---
-        async function genRandomEmail() {
-            try {
-                const res = await fetch('https://www.1secmail.com/api/v1/?action=genRandomMailbox&count=1');
-                const data = await res.json();
-                updateEmailUI(data[0]);
-                showToast("Email acak berhasil dibuat!");
-            } catch (error) {
-                showToast("Gagal menyambung ke server.", "error");
-            }
+        // Diperbarui agar Instan & Anti-Cache
+        function genRandomEmail() {
+            const randomString = Math.random().toString(36).substring(2, 12);
+            const inputDomain = document.getElementById('domain').value;
+            updateEmailUI(`${randomString}@${inputDomain}`);
+            showToast("Email acak berhasil dibuat!");
         }
 
         function setCustomEmail() {
@@ -369,7 +370,7 @@
                 document.getElementById('msgFrom').textContent = message.from;
                 document.getElementById('msgDate').textContent = message.date;
 
-                // Frame Konten (Diberi bg putih untuk iframe walau di darkmode agar HTML email normal)
+                // Frame Konten
                 const iframe = document.getElementById('msgBody');
                 const content = message.htmlBody || `<div style="font-family:sans-serif; padding:20px; color:#333;">${message.textBody}</div>`;
                 iframe.srcdoc = content;
@@ -377,9 +378,6 @@
             } catch (error) {
                 showToast("Gagal memuat isi pesan.", "error");
             }
-            
-            // Catatan: checkInterval TIDAK dihentikan di sini, 
-            // sehingga list inbox di background akan terus ter-update!
         }
 
         function closeReader() {

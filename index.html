@@ -4,24 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AKUNIN Temp Email</title>
-    
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    fontFamily: { sans: ['Poppins', 'sans-serif'] },
-                    colors: { brand: { light: '#60a5fa', DEFAULT: '#3b82f6', dark: '#2563eb' } },
-                    animation: { 'refresh-bar': 'progress 5s linear infinite' },
-                    keyframes: { progress: { '0%': { width: '0%' }, '100%': { width: '100%' } } }
-                }
-            }
-        }
+        tailwind.config = { darkMode: 'class', theme: { extend: { fontFamily: { sans: ['Poppins', 'sans-serif'] }, colors: { brand: { DEFAULT: '#3b82f6', dark: '#2563eb' } } } } }
     </script>
     <style>
         ::-webkit-scrollbar { width: 6px; }
@@ -29,184 +16,142 @@
         .toast-active { transform: translateY(0); opacity: 1; }
         .toast-enter { transform: translateY(100%); opacity: 0; }
         input:disabled, select:disabled { opacity: 0.6; cursor: not-allowed; }
+        iframe { background: white; border-radius: 8px; width: 100%; height: 100%; border: none; }
     </style>
 </head>
-<body class="bg-gray-50 text-gray-800 dark:bg-slate-900 dark:text-slate-200 min-h-screen p-4 md:p-8 transition-colors duration-300">
+<body class="bg-slate-50 text-slate-800 dark:bg-slate-950 dark:text-slate-200 min-h-screen p-4 md:p-8">
 
     <div class="max-w-4xl mx-auto space-y-6">
-        
-        <!-- HEADER KONTROL EMAIL -->
-        <div class="bg-white dark:bg-slate-800/80 backdrop-blur-md p-6 sm:p-8 rounded-2xl border border-gray-200 dark:border-slate-700/50 shadow-xl relative overflow-hidden">
-            <div class="relative z-10">
-                <div class="flex justify-between items-center mb-8">
-                    <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white flex items-center gap-3 tracking-tight">
-                        <div class="bg-brand/10 dark:bg-brand/20 p-2 sm:p-3 rounded-xl text-brand">
-                            <i class="fa-solid fa-envelope-open-text"></i>
-                        </div>
-                        AKUNIN TEMP EMAIL
-                    </h1>
-                    <button onclick="toggleTheme()" class="w-10 h-10 rounded-full bg-gray-100 dark:bg-slate-700 flex items-center justify-center text-gray-600 dark:text-yellow-400 hover:scale-110 transition-transform">
-                        <i id="themeIcon" class="fa-solid fa-moon"></i>
-                    </button>
+        <!-- HEADER KONTROL -->
+        <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-6 rounded-3xl shadow-xl">
+            <div class="flex justify-between items-center mb-8">
+                <h1 class="text-2xl font-bold flex items-center gap-3">
+                    <div class="bg-brand p-2 rounded-xl text-white"><i class="fa-solid fa-envelope-open-text"></i></div>
+                    AKUNIN TEMP
+                </h1>
+                <button onclick="toggleTheme()" class="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-yellow-500">
+                    <i id="themeIcon" class="fa-solid fa-moon"></i>
+                </button>
+            </div>
+            
+            <div class="mb-6 relative">
+                <input type="text" id="currentEmail" readonly class="w-full p-5 bg-slate-50 dark:bg-slate-800/50 rounded-2xl border-2 border-transparent text-brand font-mono text-lg sm:text-xl text-center outline-none" value="Siapkan Email Kamu...">
+                <button onclick="copyEmail()" class="absolute right-3 top-3 bottom-3 px-6 bg-brand hover:bg-brand-dark text-white rounded-xl flex items-center gap-2 font-bold transition-all">
+                    <i class="fa-regular fa-copy"></i> <span class="hidden sm:inline">Salin</span>
+                </button>
+            </div>
+
+            <div class="flex flex-col sm:flex-row gap-4">
+                <div class="flex-1 flex gap-3">
+                    <input type="text" id="username" class="flex-1 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-5 py-3 outline-none focus:border-brand" placeholder="Username...">
+                    <select id="domain" class="w-1/3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-3 outline-none cursor-pointer">
+                        <option value="akunin.my.id">@akunin.my.id</option>
+                        <option value="akunin.biz.id">@akunin.biz.id</option>
+                        <option value="1secmail.com">@1secmail.com</option>
+                    </select>
                 </div>
                 
-                <div class="mb-6 relative">
-                    <div class="relative flex items-center bg-gray-50 dark:bg-slate-950 rounded-xl overflow-hidden border border-gray-200 dark:border-slate-800 transition-colors duration-300">
-                        <input type="text" id="currentEmail" readonly class="bg-transparent w-full p-4 sm:p-5 text-emerald-600 dark:text-emerald-400 font-mono text-lg sm:text-xl text-center outline-none" value="Pilih atau Acak Email...">
-                        <button onclick="copyEmail()" id="copyBtn" class="absolute right-2 top-2 bottom-2 px-6 bg-brand hover:bg-brand-dark transition-colors text-white rounded-lg flex items-center gap-2 font-medium">
-                            <i class="fa-regular fa-copy"></i> <span class="hidden sm:inline">Salin</span>
-                        </button>
-                    </div>
-                </div>
-
-                <div class="flex flex-col sm:flex-row gap-4">
-                    <div class="flex-1 flex flex-col sm:flex-row gap-3">
-                        <div class="relative flex-1">
-                            <i class="fa-regular fa-user absolute left-4 top-3.5 text-gray-400 dark:text-slate-500"></i>
-                            <input type="text" id="username" class="w-full bg-gray-50 dark:bg-slate-900 border border-gray-200 dark:border-slate-700 focus:border-brand dark:focus:border-brand rounded-xl pl-11 pr-4 py-3 text-sm focus:outline-none transition-colors" placeholder="Kustom nama email...">
-                        </div>
-                        
-                        <div class="relative w-full sm:w-2/5">
-                            <select id="domain" class="w-full appearance-none bg-gray-50 dark:bg-slate-900 border border-gray-200 dark:border-slate-700 focus:border-brand rounded-xl px-4 py-3 text-sm focus:outline-none cursor-pointer">
-                                <option value="akunin.my.id" selected>@akunin.my.id</option>
-                                <option value="akunin.biz.id">@akunin.biz.id</option>
-                                <option value="1secmail.com">@1secmail.com</option>
-                            </select>
-                            <i class="fa-solid fa-chevron-down absolute right-4 top-4 text-gray-400 dark:text-slate-500 text-xs"></i>
-                        </div>
-                    </div>
-                    
-                    <div class="flex gap-3 w-full sm:w-auto">
-                        <button id="toggleLockBtn" onclick="toggleLock()" class="flex-1 sm:flex-none bg-emerald-500 hover:bg-emerald-600 text-white px-6 py-3 rounded-xl text-sm font-semibold transition-all flex items-center justify-center gap-2 shadow-md">
-                            <i id="lockIcon" class="fa-solid fa-check"></i>
-                        </button>
-                        <button id="deleteBtn" onclick="deleteSession()" class="hidden flex-1 sm:flex-none bg-red-500 hover:bg-red-600 text-white px-6 py-3 rounded-xl text-sm font-semibold transition-all shadow-md">
-                            <i class="fa-solid fa-trash-can"></i>
-                        </button>
-                        <button id="randomBtn" onclick="genRandomEmail()" class="flex-1 sm:flex-none bg-gray-200 hover:bg-gray-300 dark:bg-slate-700 dark:hover:bg-slate-600 text-gray-800 dark:text-white px-6 py-3 rounded-xl text-sm font-semibold transition-all flex items-center justify-center gap-2 group">
-                            <i class="fa-solid fa-shuffle group-hover:rotate-180 transition-transform duration-500"></i> Acak
-                        </button>
-                    </div>
+                <div class="flex gap-3">
+                    <button id="toggleLockBtn" onclick="toggleLock()" class="flex-1 sm:flex-none bg-emerald-500 hover:bg-emerald-600 text-white px-6 py-3 rounded-xl shadow-md font-bold transition-all">
+                        <i id="lockIcon" class="fa-solid fa-check"></i>
+                    </button>
+                    <button id="deleteBtn" onclick="deleteSession()" class="hidden flex-1 sm:flex-none bg-red-500 hover:bg-red-600 text-white px-6 py-3 rounded-xl shadow-md transition-all">
+                        <i class="fa-solid fa-trash-can"></i>
+                    </button>
+                    <button id="randomBtn" onclick="genRandomEmail()" class="flex-1 sm:flex-none bg-slate-200 dark:bg-slate-800 px-6 py-3 rounded-xl font-bold group">
+                        <i class="fa-solid fa-shuffle group-hover:rotate-180 transition-transform duration-500"></i>
+                    </button>
                 </div>
             </div>
         </div>
 
-        <!-- AREA KOTAK MASUK -->
-        <div class="bg-white dark:bg-slate-800/80 backdrop-blur-md rounded-2xl border border-gray-200 dark:border-slate-700/50 shadow-xl overflow-hidden min-h-[500px] flex flex-col relative transition-colors duration-300">
+        <!-- INBOX AREA -->
+        <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl shadow-xl min-h-[500px] flex flex-col relative overflow-hidden">
             <div id="inboxView" class="flex-1 flex flex-col">
-                <div class="p-4 bg-gray-50 dark:bg-slate-800 border-b border-gray-200 dark:border-slate-700/50 flex justify-between items-center relative">
-                    <span class="text-sm font-bold text-gray-700 dark:text-slate-300 uppercase tracking-widest flex items-center gap-2">
+                <div class="p-4 border-b dark:border-slate-800 flex justify-between items-center">
+                    <span class="text-xs font-bold uppercase tracking-widest flex items-center gap-2">
                         <i class="fa-solid fa-inbox text-brand"></i> Kotak Masuk
                     </span>
-                    <span id="refreshStatus" class="hidden text-xs text-gray-500 dark:text-slate-400 flex items-center gap-2">
-                        Auto-refresh
-                        <div class="w-16 h-1.5 bg-gray-200 dark:bg-slate-700 rounded-full overflow-hidden">
-                            <div class="h-full bg-brand animate-refresh-bar" id="refreshBar"></div>
-                        </div>
-                    </span>
+                    <div id="refreshStatus" class="hidden w-24 h-1.5 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+                        <div class="h-full bg-brand animate-[progress_5s_linear_infinite]" id="refreshBar"></div>
+                    </div>
                 </div>
-                <div id="inboxList" class="flex-1 flex flex-col divide-y divide-gray-100 dark:divide-slate-700/50">
-                    <div class="flex-1 flex flex-col items-center justify-center p-10 text-gray-400 dark:text-slate-500">
-                        <i class="fa-regular fa-hand-pointer text-5xl mb-4 opacity-50"></i>
-                        <p>Klik tombol centang untuk mengaktifkan email.</p>
+                <div id="inboxList" class="flex-1 flex flex-col divide-y dark:divide-slate-800">
+                    <div class="flex-1 flex flex-col items-center justify-center p-10 text-slate-400">
+                        <i class="fa-solid fa-lock text-5xl mb-4 opacity-20"></i>
+                        <p class="text-sm">Klik centang untuk mengaktifkan kotak masuk.</p>
                     </div>
                 </div>
             </div>
 
-            <!-- READER VIEW -->
-            <div id="readerView" class="hidden flex-1 flex-col absolute inset-0 bg-white dark:bg-slate-800/95 backdrop-blur-md z-20 transition-colors duration-300">
-                <div class="p-4 sm:p-5 border-b border-gray-200 dark:border-slate-700/50 flex items-center gap-4 bg-gray-50 dark:bg-slate-900/50">
-                    <button onclick="closeReader()" class="bg-gray-200 hover:bg-gray-300 dark:bg-slate-700 dark:hover:bg-slate-600 px-4 py-2 rounded-lg text-sm text-gray-800 dark:text-white transition-colors flex items-center gap-2 font-medium shadow-sm">
-                        <i class="fa-solid fa-arrow-left"></i> Kembali
-                    </button>
-                    <div class="flex-1 min-w-0">
-                        <h2 id="msgSubject" class="font-bold text-gray-900 dark:text-slate-100 truncate text-lg">Subjek</h2>
-                    </div>
+            <!-- READER VIEW (Full Frame)[cite: 1] -->
+            <div id="readerView" class="hidden absolute inset-0 bg-white dark:bg-slate-900 z-50 flex flex-col">
+                <div class="p-4 border-b dark:border-slate-800 flex items-center gap-4">
+                    <button onclick="closeReader()" class="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg"><i class="fa-solid fa-arrow-left"></i></button>
+                    <h2 id="msgSubject" class="font-bold truncate text-lg flex-1">...</h2>
                 </div>
-                <div class="px-5 py-4 border-b border-gray-100 dark:border-slate-700/30 bg-white dark:bg-slate-800">
-                    <div class="flex flex-col sm:flex-row sm:items-center justify-between text-sm gap-2 text-gray-600 dark:text-slate-300">
-                        <p>Dari: <span id="msgFrom" class="text-brand font-medium">...</span></p>
-                        <p id="msgDate" class="text-xs"><i class="fa-regular fa-calendar mr-1"></i> ...</p>
-                    </div>
+                <div class="p-4 text-xs flex justify-between bg-slate-50 dark:bg-slate-800/50">
+                    <p>Dari: <span id="msgFrom" class="text-brand font-bold">...</span></p>
+                    <p id="msgDate" class="text-slate-500 font-mono">...</p>
                 </div>
-                <div class="flex-1 bg-white relative">
-                    <iframe id="msgBody" class="absolute inset-0 w-full h-full border-0" sandbox="allow-same-origin"></iframe>
+                <div class="flex-1 p-2 bg-slate-100 dark:bg-slate-950">
+                    <iframe id="msgBody" sandbox="allow-same-origin"></iframe>
                 </div>
             </div>
         </div>
     </div>
 
-    <div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 px-6 py-3 rounded-full text-white text-sm font-medium shadow-xl transition-all duration-300 toast-enter flex items-center gap-2 z-50 pointer-events-none">
-        <i class="fa-solid fa-circle-info"></i> <span id="toastMsg">Notifikasi</span>
+    <div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 px-8 py-4 rounded-2xl text-white text-sm font-bold shadow-2xl transition-all duration-300 toast-enter z-[100] flex items-center gap-2">
+        <i class="fa-solid fa-bell"></i> <span id="toastMsg"></span>
     </div>
 
     <script>
-        // GANTI DENGAN URL WORKER KAMU
-        const WORKER_URL = "https://akunin-mail-api.akuninpremiumstore.workers.dev"; 
-
-        let currentEmail = "";
-        let isLocked = false;
-        let checkInterval;
+        const WORKER_URL = "URL_WORKER_KAMU_DI_SINI"; // GANTI DENGAN URL WORKER KAMU
+        let currentEmail = "", isLocked = false, checkInterval;
 
         function toggleTheme() {
-            const html = document.documentElement;
-            const icon = document.getElementById('themeIcon');
-            if (html.classList.contains('dark')) {
-                html.classList.remove('dark');
-                localStorage.theme = 'light';
-                icon.className = 'fa-solid fa-moon';
-            } else {
-                html.classList.add('dark');
-                localStorage.theme = 'dark';
-                icon.className = 'fa-solid fa-sun';
-            }
+            const isDark = document.documentElement.classList.toggle('dark');
+            localStorage.theme = isDark ? 'dark' : 'light';
+            document.getElementById('themeIcon').className = isDark ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
         }
         if (localStorage.theme === 'light') toggleTheme();
 
-        function showToast(message, type = 'success') {
-            const toast = document.getElementById('toast');
-            document.getElementById('toastMsg').textContent = message;
-            toast.className = `fixed bottom-6 left-1/2 -translate-x-1/2 px-6 py-3 rounded-full text-white text-sm font-medium shadow-xl z-50 transition-all duration-300 toast-active ${type === 'error' ? 'bg-red-500' : 'bg-gray-900'}`;
-            setTimeout(() => toast.classList.replace('toast-active', 'toast-enter'), 3000);
+        function showToast(msg, type = 'success') {
+            const t = document.getElementById('toast');
+            document.getElementById('toastMsg').innerText = msg;
+            t.className = `fixed bottom-6 left-1/2 -translate-x-1/2 px-8 py-4 rounded-2xl text-white text-sm font-bold shadow-2xl transition-all duration-300 z-[100] flex items-center gap-2 toast-active ${type === 'error' ? 'bg-red-500' : 'bg-slate-900'}`;
+            setTimeout(() => t.classList.replace('toast-active', 'toast-enter'), 3000);
         }
 
         function genRandomEmail() {
             if (isLocked) return;
-            const rand = Math.random().toString(36).substring(2, 10);
-            document.getElementById('username').value = rand;
+            document.getElementById('username').value = Math.random().toString(36).substring(2, 10);
             updateDisplay();
         }
 
         function updateDisplay() {
-            const user = document.getElementById('username').value;
-            const dom = document.getElementById('domain').value;
-            document.getElementById('currentEmail').value = user ? `${user}@${dom}` : "Pilih atau Acak Email...";
+            const u = document.getElementById('username').value.trim();
+            const d = document.getElementById('domain').value;
+            document.getElementById('currentEmail').value = u ? `${u}@${d}` : "Siapkan Email Kamu...";
         }
 
         async function toggleLock() {
-            const user = document.getElementById('username').value.trim().toLowerCase().replace(/[^a-z0-9]/g, '');
-            const dom = document.getElementById('domain').value;
-            const target = `${user}@${dom}`;
+            const u = document.getElementById('username').value.trim().toLowerCase().replace(/[^a-z0-9]/g, '');
+            const d = document.getElementById('domain').value;
+            const target = `${u}@${d}`;
 
-            if (!user) {
-                showToast("Nama email tidak boleh kosong!", "error");
-                return;
-            }
+            if (!u) return showToast("Isi username!", "error");
 
-            // Validasi Unique/Ketersediaan ke Server
             if (!isLocked) {
                 showToast("Mengecek ketersediaan...");
                 try {
                     const res = await fetch(`${WORKER_URL}?action=lock&email=${target}`);
                     const data = await res.json();
-                    if (data.status === "taken") {
-                        return showToast("Maaf, email ini sudah digunakan orang lain!", "error");
-                    }
-                } catch (e) { return showToast("Gagal koneksi ke server", "error"); }
+                    if (data.status === "taken") return showToast("Email sudah digunakan!", "error");
+                } catch (e) { return showToast("Server tidak merespon", "error"); }
             }
 
             isLocked = !isLocked;
-            
             document.getElementById('username').disabled = isLocked;
             document.getElementById('domain').disabled = isLocked;
             document.getElementById('randomBtn').classList.toggle('hidden', isLocked);
@@ -216,7 +161,7 @@
 
             if (isLocked) {
                 currentEmail = target;
-                showToast("Email diaktifkan!");
+                showToast("Email Aktif!");
                 document.getElementById('refreshStatus').classList.remove('hidden');
                 startAutoRefresh();
             } else {
@@ -227,97 +172,87 @@
         }
 
         async function deleteSession() {
-            if (!confirm("Hapus kotak masuk ini? Email akan tersedia kembali.")) return;
+            if (!confirm("Hapus kotak masuk ini?")) return;
             try {
                 await fetch(`${WORKER_URL}?action=delete&email=${currentEmail}`);
-                showToast("Kotak masuk dihapus!");
-                isLocked = false;
-                toggleLock(); // Reset UI
-                document.getElementById('username').value = "";
-                updateDisplay();
-            } catch (e) { showToast("Gagal menghapus", "error"); }
+                showToast("Dihapus!");
+                location.reload();
+            } catch (e) { showToast("Gagal hapus", "error"); }
         }
 
         function resetInbox() {
-            document.getElementById('inboxList').innerHTML = `<div class="flex-1 flex flex-col items-center justify-center p-10 text-gray-400 dark:text-slate-500"><i class="fa-solid fa-pencil text-4xl mb-4 opacity-20"></i><p class="text-sm">Penyuntingan aktif...</p></div>`;
+            document.getElementById('inboxList').innerHTML = `<div class="flex-1 flex flex-col items-center justify-center p-10 text-slate-400"><i class="fa-solid fa-pencil text-4xl mb-4 opacity-20"></i><p class="text-sm">Penyuntingan aktif...</p></div>`;
         }
 
         function startAutoRefresh() {
             checkInbox();
-            checkInterval = setInterval(() => {
-                if (document.hidden) return;
-                checkInbox();
-                const bar = document.getElementById('refreshBar');
-                bar.classList.remove('animate-refresh-bar');
-                void bar.offsetWidth;
-                bar.classList.add('animate-refresh-bar');
-            }, 5000);
+            checkInterval = setInterval(() => { if (!document.hidden) checkInbox(); }, 5000);
         }
 
         async function checkInbox() {
-            const [user, dom] = currentEmail.split('@');
-            let messages = [];
+            const [u, d] = currentEmail.split('@');
             try {
-                if (dom.includes('akunin')) {
+                let m = [];
+                if (d.includes('akunin')) {
                     const res = await fetch(`${WORKER_URL}?email=${currentEmail}`);
-                    messages = await res.json();
+                    m = await res.json();
                 } else {
-                    const res = await fetch(`https://www.1secmail.com/api/v1/?action=getMessages&login=${user}&domain=${dom}`);
-                    messages = await res.json();
+                    const res = await fetch(`https://www.1secmail.com/api/v1/?action=getMessages&login=${u}&domain=${d}`);
+                    m = await res.json();
                 }
-                renderInbox(messages);
-            } catch (e) { console.error("Refresh error"); }
+                renderInbox(m);
+            } catch (e) {}
         }
 
         function renderInbox(data) {
             const list = document.getElementById('inboxList');
             if (data.length === 0) {
-                list.innerHTML = `<div class="flex flex-col items-center justify-center h-64 text-gray-400 animate-pulse"><i class="fa-solid fa-spinner fa-spin text-2xl mb-2"></i><p class="text-[10px] font-bold">MENUNGGU PESAN...</p></div>`;
+                list.innerHTML = `<div class="flex flex-col items-center justify-center h-64 text-slate-400 animate-pulse"><i class="fa-solid fa-spinner fa-spin text-2xl mb-2"></i><p class="text-xs font-bold uppercase tracking-widest">Mencari Pesan...</p></div>`;
                 return;
             }
             list.innerHTML = data.map(m => `
-                <div onclick="readEmail('${m.id}')" class="p-4 sm:p-5 hover:bg-brand/5 cursor-pointer transition-all flex justify-between items-center group border-l-4 border-transparent hover:border-brand">
+                <div onclick="readEmail('${m.id}')" class="p-4 hover:bg-brand/5 cursor-pointer flex justify-between items-center transition-all border-l-4 border-transparent hover:border-brand">
                     <div class="min-w-0 flex-1">
-                        <div class="font-bold text-brand truncate">${m.from}</div>
-                        <div class="text-sm truncate dark:text-slate-300">${m.subject}</div>
+                        <p class="text-brand font-bold text-sm truncate">${m.from}</p>
+                        <p class="text-[13px] font-medium truncate mt-0.5">${m.subject}</p>
                     </div>
-                    <div class="text-[10px] text-gray-400 font-mono ml-4">${m.date.split(',')[0]}</div>
+                    <span class="text-[10px] text-slate-400 font-mono ml-4 shrink-0">${m.date.split(',')[0]}</span>
                 </div>
             `).join('');
         }
 
         async function readEmail(id) {
             showToast("Membuka pesan...");
-            const [user, dom] = currentEmail.split('@');
-            let m;
+            const [u, d] = currentEmail.split('@');
+            let det;
             try {
-                if (dom.includes('akunin')) {
+                if (d.includes('akunin')) {
                     const res = await fetch(`${WORKER_URL}?email=${currentEmail}`);
                     const list = await res.json();
-                    m = list.find(x => x.id === id);
+                    det = list.find(x => x.id === id);
                 } else {
-                    const res = await fetch(`https://www.1secmail.com/api/v1/?action=readMessage&login=${user}&domain=${dom}&id=${id}`);
-                    m = await res.json();
+                    const res = await fetch(`https://www.1secmail.com/api/v1/?action=readMessage&login=${u}&domain=${d}&id=${id}`);
+                    det = await res.json();
                 }
-                document.getElementById('readerView').classList.replace('hidden', 'flex');
-                document.getElementById('msgSubject').innerText = m.subject;
-                document.getElementById('msgFrom').innerText = m.from;
-                document.getElementById('msgDate').innerText = m.date;
-                document.getElementById('msgBody').srcdoc = m.html || m.htmlBody || `<div style="font-family:sans-serif;padding:20px">${m.textBody}</div>`;
-            } catch (e) { showToast("Gagal memuat pesan", "error"); }
+                document.getElementById('readerView').classList.remove('hidden');
+                document.getElementById('msgSubject').innerText = det.subject;
+                document.getElementById('msgFrom').innerText = det.from;
+                document.getElementById('msgDate').innerText = det.date;
+                // RENDER ASLI: Menggunakan srcdoc agar HTML tidak berantakan[cite: 1]
+                document.getElementById('msgBody').srcdoc = `<html><head><style>body{font-family:sans-serif;margin:20px;line-height:1.6;color:#333}img{max-width:100%}</style></head><body>${det.html || det.htmlBody || det.textBody}</body></html>`;
+            } catch (e) { showToast("Gagal memuat", "error"); }
         }
 
-        function closeReader() { document.getElementById('readerView').classList.replace('flex', 'hidden'); }
-        function copyEmail() { navigator.clipboard.writeText(currentEmail); showToast("Disalin!"); }
+        function closeReader() { document.getElementById('readerView').classList.add('hidden'); }
+        function copyEmail() { navigator.clipboard.writeText(currentEmail); showToast("Alamat Disalin!"); }
 
         window.onload = () => {
-            const path = window.location.pathname;
-            if (path.startsWith('/mailbox/')) {
-                const userFromUrl = path.split('/')[2];
-                if (userFromUrl) {
-                    document.getElementById('username').value = userFromUrl.split('@')[0];
-                    updateDisplay();
-                    toggleLock();
+            const p = window.location.pathname;
+            if (p.startsWith('/mailbox/')) {
+                const uUrl = p.split('/')[2];
+                if (uUrl) {
+                    document.getElementById('username').value = uUrl.split('@')[0];
+                    updateDisplay(); toggleLock();
                 }
             }
         };

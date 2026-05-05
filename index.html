@@ -11,103 +11,119 @@
         tailwind.config = { darkMode: 'class', theme: { extend: { fontFamily: { sans: ['Poppins', 'sans-serif'] }, colors: { brand: { DEFAULT: '#3b82f6', dark: '#2563eb' } } } } }
     </script>
     <style>
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-thumb { background: #475569; border-radius: 4px; }
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-thumb { background: #475569; border-radius: 10px; }
         .toast-active { transform: translateY(0); opacity: 1; }
         .toast-enter { transform: translateY(100%); opacity: 0; }
-        input:disabled, select:disabled { opacity: 0.6; cursor: not-allowed; }
-        iframe { background: white; border-radius: 8px; width: 100%; height: 100%; border: none; }
+        iframe { background: white; width: 100%; height: 100%; border: none; }
+        .view-transition { transition: all 0.3s ease; }
     </style>
 </head>
-<body class="bg-slate-50 text-slate-800 dark:bg-slate-950 dark:text-slate-200 min-h-screen p-4 md:p-8">
+<body class="bg-slate-50 text-slate-800 dark:bg-slate-950 dark:text-slate-200 min-h-screen p-3 md:p-8">
 
     <div class="max-w-4xl mx-auto space-y-6">
-        <!-- HEADER KONTROL -->
-        <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-6 rounded-3xl shadow-xl">
-            <div class="flex justify-between items-center mb-8">
-                <h1 class="text-2xl font-bold flex items-center gap-3">
-                    <div class="bg-brand p-2 rounded-xl text-white"><i class="fa-solid fa-envelope-open-text"></i></div>
-                    AKUNIN TEMP
-                </h1>
-                <button onclick="toggleTheme()" class="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-yellow-500">
-                    <i id="themeIcon" class="fa-solid fa-moon"></i>
-                </button>
+        <!-- HEADER -->
+        <div class="flex justify-between items-center px-2">
+            <h1 class="text-xl md:text-2xl font-bold flex items-center gap-2">
+                <div class="bg-brand p-1.5 rounded-lg text-white"><i class="fa-solid fa-envelope-open-text"></i></div>
+                AKUNIN <span class="text-brand">TEMP</span>
+            </h1>
+            <button onclick="toggleTheme()" class="w-10 h-10 rounded-full bg-white dark:bg-slate-900 border dark:border-slate-800 flex items-center justify-center text-yellow-500 shadow-sm">
+                <i id="themeIcon" class="fa-solid fa-moon"></i>
+            </button>
+        </div>
+
+        <!-- MODE 1: SETUP VIEW (Hanya muncul jika belum ada email) -->
+        <div id="setupView" class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-6 rounded-3xl shadow-xl space-y-6">
+            <div class="text-center space-y-2">
+                <h2 class="text-lg font-bold">Buat Alamat Email Baru</h2>
+                <p class="text-xs text-slate-500">Gunakan domain premium untuk verifikasi instan.</p>
             </div>
             
-            <div class="mb-6 relative">
-                <input type="text" id="currentEmail" readonly class="w-full p-5 bg-slate-50 dark:bg-slate-800/50 rounded-2xl border-2 border-transparent text-brand font-mono text-lg sm:text-xl text-center outline-none" value="Siapkan Email Kamu...">
-                <button onclick="copyEmail()" class="absolute right-3 top-3 bottom-3 px-6 bg-brand hover:bg-brand-dark text-white rounded-xl flex items-center gap-2 font-bold transition-all">
-                    <i class="fa-regular fa-copy"></i> <span class="hidden sm:inline">Salin</span>
-                </button>
-            </div>
-
-            <div class="flex flex-col sm:flex-row gap-4">
-                <div class="flex-1 flex gap-3">
-                    <input type="text" id="username" class="flex-1 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-5 py-3 outline-none focus:border-brand" placeholder="Username...">
-                    <select id="domain" class="w-1/3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-3 outline-none cursor-pointer">
+            <div class="flex flex-col gap-3">
+                <div class="flex gap-2">
+                    <input type="text" id="username" class="flex-1 bg-slate-50 dark:bg-slate-800 border dark:border-slate-700 rounded-xl px-4 py-3 outline-none focus:border-brand text-sm" placeholder="Masukkan username...">
+                    <select id="domain" class="w-2/5 bg-slate-50 dark:bg-slate-800 border dark:border-slate-700 rounded-xl px-2 py-3 outline-none text-xs cursor-pointer">
                         <option value="akunin.my.id">@akunin.my.id</option>
                         <option value="akunin.biz.id">@akunin.biz.id</option>
-                        <option value="1secmail.com">@1secmail.com</option>
                     </select>
                 </div>
-                
-                <div class="flex gap-3">
-                    <button id="toggleLockBtn" onclick="toggleLock()" class="flex-1 sm:flex-none bg-emerald-500 hover:bg-emerald-600 text-white px-6 py-3 rounded-xl shadow-md font-bold transition-all">
-                        <i id="lockIcon" class="fa-solid fa-check"></i>
+                <div class="grid grid-cols-2 gap-3">
+                    <button onclick="startSession()" class="bg-brand hover:bg-brand-dark text-white py-3 rounded-xl font-bold text-sm shadow-lg shadow-brand/20 transition-all flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-plus"></i> Buat Email
                     </button>
-                    <button id="deleteBtn" onclick="deleteSession()" class="hidden flex-1 sm:flex-none bg-red-500 hover:bg-red-600 text-white px-6 py-3 rounded-xl shadow-md transition-all">
-                        <i class="fa-solid fa-trash-can"></i>
-                    </button>
-                    <button id="randomBtn" onclick="genRandomEmail()" class="flex-1 sm:flex-none bg-slate-200 dark:bg-slate-800 px-6 py-3 rounded-xl font-bold group">
-                        <i class="fa-solid fa-shuffle group-hover:rotate-180 transition-transform duration-500"></i>
+                    <button onclick="genRandomEmail()" class="bg-slate-100 dark:bg-slate-800 py-3 rounded-xl font-bold text-sm transition-all flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-shuffle"></i> Acak
                     </button>
                 </div>
             </div>
         </div>
 
-        <!-- INBOX AREA -->
-        <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl shadow-xl min-h-[500px] flex flex-col relative overflow-hidden">
-            <div id="inboxView" class="flex-1 flex flex-col">
-                <div class="p-4 border-b dark:border-slate-800 flex justify-between items-center">
-                    <span class="text-xs font-bold uppercase tracking-widest flex items-center gap-2">
-                        <i class="fa-solid fa-inbox text-brand"></i> Kotak Masuk
-                    </span>
-                    <div id="refreshStatus" class="hidden w-24 h-1.5 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
-                        <div class="h-full bg-brand animate-[progress_5s_linear_infinite]" id="refreshBar"></div>
-                    </div>
+        <!-- MODE 2: ACTIVE INBOX VIEW -->
+        <div id="activeView" class="hidden space-y-6">
+            <!-- Info Email & Toolbar -->
+            <div class="bg-white dark:bg-slate-900 border dark:border-slate-800 p-5 rounded-3xl shadow-lg">
+                <div class="text-center mb-4">
+                    <p class="text-[10px] uppercase tracking-widest text-slate-500 mb-1 font-bold">Email Aktif Anda</p>
+                    <h2 id="displayEmail" class="text-lg md:text-xl font-mono font-bold text-brand break-all">...</h2>
                 </div>
-                <div id="inboxList" class="flex-1 flex flex-col divide-y dark:divide-slate-800">
-                    <div class="flex-1 flex flex-col items-center justify-center p-10 text-slate-400">
-                        <i class="fa-solid fa-lock text-5xl mb-4 opacity-20"></i>
-                        <p class="text-sm">Klik centang untuk mengaktifkan kotak masuk.</p>
-                    </div>
+                
+                <!-- 4 Tombol Utama -->
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-2">
+                    <button onclick="copyEmail()" class="bg-slate-50 dark:bg-slate-800 p-3 rounded-xl text-xs font-bold flex flex-col items-center gap-1 hover:bg-brand hover:text-white transition-all">
+                        <i class="fa-regular fa-copy text-lg"></i> Salin
+                    </button>
+                    <button onclick="checkInbox()" class="bg-slate-50 dark:bg-slate-800 p-3 rounded-xl text-xs font-bold flex flex-col items-center gap-1 hover:bg-brand hover:text-white transition-all">
+                        <i class="fa-solid fa-arrows-rotate text-lg"></i> Refresh
+                    </button>
+                    <button onclick="newEmail()" class="bg-slate-50 dark:bg-slate-800 p-3 rounded-xl text-xs font-bold flex flex-col items-center gap-1 hover:bg-emerald-500 hover:text-white transition-all">
+                        <i class="fa-solid fa-plus-square text-lg"></i> New
+                    </button>
+                    <button onclick="deleteSession()" class="bg-slate-50 dark:bg-slate-800 p-3 rounded-xl text-xs font-bold flex flex-col items-center gap-1 hover:bg-red-500 hover:text-white transition-all">
+                        <i class="fa-solid fa-trash-can text-lg"></i> Delete
+                    </button>
                 </div>
             </div>
 
-            <!-- READER VIEW (Full Frame)[cite: 1] -->
-            <div id="readerView" class="hidden absolute inset-0 bg-white dark:bg-slate-900 z-50 flex flex-col">
-                <div class="p-4 border-b dark:border-slate-800 flex items-center gap-4">
-                    <button onclick="closeReader()" class="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg"><i class="fa-solid fa-arrow-left"></i></button>
-                    <h2 id="msgSubject" class="font-bold truncate text-lg flex-1">...</h2>
+            <!-- Pesan Masuk -->
+            <div class="bg-white dark:bg-slate-900 border dark:border-slate-800 rounded-3xl shadow-xl min-h-[400px] flex flex-col overflow-hidden relative">
+                <div class="p-4 border-b dark:border-slate-800 flex justify-between items-center bg-slate-50/50 dark:bg-slate-900/50">
+                    <span class="text-[10px] font-bold uppercase tracking-widest flex items-center gap-2"><i class="fa-solid fa-inbox text-brand"></i> Kotak Masuk</span>
+                    <div id="autoRefreshIndicator" class="w-16 h-1 bg-slate-200 dark:bg-slate-800 rounded-full overflow-hidden">
+                        <div class="h-full bg-brand animate-[progress_3s_linear_infinite]"></div>
+                    </div>
                 </div>
-                <div class="p-4 text-xs flex justify-between bg-slate-50 dark:bg-slate-800/50">
-                    <p>Dari: <span id="msgFrom" class="text-brand font-bold">...</span></p>
-                    <p id="msgDate" class="text-slate-500 font-mono">...</p>
+                <div id="inboxList" class="flex-1 flex flex-col divide-y dark:divide-slate-800">
+                    <!-- List Render Here -->
                 </div>
-                <div class="flex-1 p-2 bg-slate-100 dark:bg-slate-950">
-                    <iframe id="msgBody" sandbox="allow-same-origin"></iframe>
+
+                <!-- READER VIEW -->
+                <div id="readerView" class="hidden absolute inset-0 bg-white dark:bg-slate-900 z-50 flex flex-col">
+                    <div class="p-4 border-b dark:border-slate-800 flex items-center gap-3">
+                        <button onclick="closeReader()" class="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg"><i class="fa-solid fa-arrow-left"></i></button>
+                        <h2 id="msgSubject" class="font-bold truncate text-sm flex-1">...</h2>
+                    </div>
+                    <div class="p-3 text-[10px] flex justify-between bg-slate-50 dark:bg-slate-800/50">
+                        <p class="truncate mr-2">Dari: <span id="msgFrom" class="text-brand font-bold">...</span></p>
+                        <p id="msgDate" class="text-slate-400 shrink-0">...</p>
+                    </div>
+                    <div class="flex-1 bg-white">
+                        <iframe id="msgBody" sandbox="allow-same-origin"></iframe>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 px-8 py-4 rounded-2xl text-white text-sm font-bold shadow-2xl transition-all duration-300 toast-enter z-[100] flex items-center gap-2">
+    <!-- TOAST -->
+    <div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 px-6 py-3 rounded-2xl text-white text-xs font-bold shadow-2xl transition-all duration-300 toast-enter z-[100] flex items-center gap-2">
         <i class="fa-solid fa-bell"></i> <span id="toastMsg"></span>
     </div>
 
     <script>
-        const WORKER_URL = "https://akunin-mail-api.akuninpremiumstore.workers.dev"; // GANTI DENGAN URL WORKER KAMU
-        let currentEmail = "", isLocked = false, checkInterval;
+        const WORKER_URL = "https://akunin-mail-api.akuninpremiumstore.workers.dev";
+        let currentEmail = localStorage.getItem('last_akunin_email') || "";
+        let checkInterval;
 
         function toggleTheme() {
             const isDark = document.documentElement.classList.toggle('dark');
@@ -119,190 +135,139 @@
         function showToast(msg, type = 'success') {
             const t = document.getElementById('toast');
             document.getElementById('toastMsg').innerText = msg;
-            t.className = `fixed bottom-6 left-1/2 -translate-x-1/2 px-8 py-4 rounded-2xl text-white text-sm font-bold shadow-2xl transition-all duration-300 z-[100] flex items-center gap-2 toast-active ${type === 'error' ? 'bg-red-500' : 'bg-slate-900'}`;
+            t.className = `fixed bottom-6 left-1/2 -translate-x-1/2 px-6 py-3 rounded-2xl text-white text-xs font-bold shadow-2xl transition-all duration-300 z-[100] flex items-center gap-2 toast-active ${type === 'error' ? 'bg-red-500' : 'bg-slate-900'}`;
             setTimeout(() => t.classList.replace('toast-active', 'toast-enter'), 3000);
         }
 
         function genRandomEmail() {
-            if (isLocked) return;
             document.getElementById('username').value = Math.random().toString(36).substring(2, 10);
-            updateDisplay();
         }
 
-        function updateDisplay() {
-            const u = document.getElementById('username').value.trim();
-            const d = document.getElementById('domain').value;
-            document.getElementById('currentEmail').value = u ? `${u}@${d}` : "Siapkan Email Kamu...";
-        }
+        async function startSession(forceEmail = null) {
+            let target;
+            let isDeepLink = false;
 
-        async function toggleLock() {
-            const u = document.getElementById('username').value.trim().toLowerCase().replace(/[^a-z0-9]/g, '');
-            const d = document.getElementById('domain').value;
-            const target = `${u}@${d}`;
+            if (forceEmail) {
+                target = forceEmail;
+                isDeepLink = true;
+            } else {
+                const u = document.getElementById('username').value.trim().toLowerCase().replace(/[^a-z0-9]/g, '');
+                const d = document.getElementById('domain').value;
+                if (!u) return showToast("Isi username!", "error");
+                target = `${u}@${d}`;
+            }
 
-            if (!u) return showToast("Isi username!", "error");
-
-            if (!isLocked) {
-                showToast("Mengecek ketersediaan...");
+            // Jika ini email baru (bukan reload/deep link), cek ketersediaan
+            if (!forceEmail && target !== localStorage.getItem('last_akunin_email')) {
+                showToast("Mendaftarkan email...");
                 try {
                     const res = await fetch(`${WORKER_URL}?action=lock&email=${target}`);
                     const data = await res.json();
                     if (data.status === "taken") return showToast("Email sudah digunakan!", "error");
-                } catch (e) { return showToast("Server tidak merespon", "error"); }
+                } catch (e) { return showToast("Gagal koneksi", "error"); }
             }
 
-            isLocked = !isLocked;
-            document.getElementById('username').disabled = isLocked;
-            document.getElementById('domain').disabled = isLocked;
-            document.getElementById('randomBtn').classList.toggle('hidden', isLocked);
-            document.getElementById('deleteBtn').classList.toggle('hidden', !isLocked);
-            document.getElementById('lockIcon').className = isLocked ? 'fa-solid fa-pencil' : 'fa-solid fa-check';
-            document.getElementById('toggleLockBtn').classList.toggle('bg-orange-500', isLocked);
+            currentEmail = target;
+            localStorage.setItem('last_akunin_email', currentEmail);
+            renderView();
+        }
 
-            if (isLocked) {
-                currentEmail = target;
-                showToast("Email Aktif!");
-                document.getElementById('refreshStatus').classList.remove('hidden');
+        function renderView() {
+            if (currentEmail) {
+                document.getElementById('setupView').classList.add('hidden');
+                document.getElementById('activeView').classList.remove('hidden');
+                document.getElementById('displayEmail').innerText = currentEmail;
                 startAutoRefresh();
             } else {
+                document.getElementById('setupView').classList.remove('hidden');
+                document.getElementById('activeView').classList.add('hidden');
                 clearInterval(checkInterval);
-                document.getElementById('refreshStatus').classList.add('hidden');
-                resetInbox();
+            }
+        }
+
+        function newEmail() {
+            if(confirm("Buka sesi baru? Email ini akan tetap aktif di background.")) {
+                currentEmail = "";
+                localStorage.removeItem('last_akunin_email');
+                renderView();
             }
         }
 
         async function deleteSession() {
-            if (!confirm("Hapus kotak masuk ini?")) return;
+            if (!confirm("Hapus total email ini? Pesan akan hilang selamanya.")) return;
             try {
+                showToast("Menghapus...");
                 await fetch(`${WORKER_URL}?action=delete&email=${currentEmail}`);
-                showToast("Dihapus!");
-                location.reload();
+                currentEmail = "";
+                localStorage.removeItem('last_akunin_email');
+                renderView();
             } catch (e) { showToast("Gagal hapus", "error"); }
         }
 
-        function resetInbox() {
-            document.getElementById('inboxList').innerHTML = `<div class="flex-1 flex flex-col items-center justify-center p-10 text-slate-400"><i class="fa-solid fa-pencil text-4xl mb-4 opacity-20"></i><p class="text-sm">Penyuntingan aktif...</p></div>`;
-        }
-
         function startAutoRefresh() {
+            clearInterval(checkInterval);
             checkInbox();
-            checkInterval = setInterval(() => { if (!document.hidden) checkInbox(); }, 5000);
+            // Refresh lebih cepat: 3 detik
+            checkInterval = setInterval(() => { if (!document.hidden) checkInbox(); }, 3000);
         }
 
         async function checkInbox() {
-            const [u, d] = currentEmail.split('@');
             try {
-                let m = [];
-                if (d.includes('akunin')) {
-                    const res = await fetch(`${WORKER_URL}?email=${currentEmail}`);
-                    m = await res.json();
+                const res = await fetch(`${WORKER_URL}?email=${currentEmail}`);
+                const m = await res.json();
+                const list = document.getElementById('inboxList');
+                if (m.length === 0) {
+                    list.innerHTML = `<div class="flex flex-col items-center justify-center h-64 text-slate-400 animate-pulse"><i class="fa-solid fa-spinner fa-spin text-xl mb-2"></i><p class="text-[10px] font-bold">MENUNGGU PESAN...</p></div>`;
                 } else {
-                    const res = await fetch(`https://www.1secmail.com/api/v1/?action=getMessages&login=${u}&domain=${d}`);
-                    m = await res.json();
+                    list.innerHTML = m.map(msg => `
+                        <div onclick="readEmail('${msg.id}')" class="p-4 hover:bg-brand/5 cursor-pointer flex justify-between items-center transition-all border-l-4 border-transparent hover:border-brand">
+                            <div class="min-w-0 flex-1">
+                                <p class="text-brand font-bold text-[11px] truncate">${msg.from}</p>
+                                <p class="text-[13px] font-semibold truncate mt-0.5 dark:text-slate-200">${msg.subject}</p>
+                            </div>
+                            <span class="text-[9px] text-slate-400 font-mono ml-4 shrink-0">${msg.date.split(',')[0]}</span>
+                        </div>
+                    `).join('');
                 }
-                renderInbox(m);
             } catch (e) {}
         }
 
-        function renderInbox(data) {
-            const list = document.getElementById('inboxList');
-            if (data.length === 0) {
-                list.innerHTML = `<div class="flex flex-col items-center justify-center h-64 text-slate-400 animate-pulse"><i class="fa-solid fa-spinner fa-spin text-2xl mb-2"></i><p class="text-xs font-bold uppercase tracking-widest">Mencari Pesan...</p></div>`;
-                return;
-            }
-            list.innerHTML = data.map(m => `
-                <div onclick="readEmail('${m.id}')" class="p-4 hover:bg-brand/5 cursor-pointer flex justify-between items-center transition-all border-l-4 border-transparent hover:border-brand">
-                    <div class="min-w-0 flex-1">
-                        <p class="text-brand font-bold text-sm truncate">${m.from}</p>
-                        <p class="text-[13px] font-medium truncate mt-0.5">${m.subject}</p>
-                    </div>
-                    <span class="text-[10px] text-slate-400 font-mono ml-4 shrink-0">${m.date.split(',')[0]}</span>
-                </div>
-            `).join('');
-        }
-
         async function readEmail(id) {
-            showToast("Membuka pesan...");
-            const [u, d] = currentEmail.split('@');
-            let det;
+            showToast("Memuat...");
             try {
-                if (d.includes('akunin')) {
-                    const res = await fetch(`${WORKER_URL}?email=${currentEmail}`);
-                    const list = await res.json();
-                    det = list.find(x => x.id === id);
-                } else {
-                    const res = await fetch(`https://www.1secmail.com/api/v1/?action=readMessage&login=${u}&domain=${d}&id=${id}`);
-                    det = await res.json();
-                }
+                const res = await fetch(`${WORKER_URL}?email=${currentEmail}`);
+                const m = await res.json();
+                const det = m.find(x => x.id === id);
                 document.getElementById('readerView').classList.remove('hidden');
                 document.getElementById('msgSubject').innerText = det.subject;
                 document.getElementById('msgFrom').innerText = det.from;
                 document.getElementById('msgDate').innerText = det.date;
-                // RENDER ASLI: Menggunakan srcdoc agar HTML tidak berantakan[cite: 1]
-                document.getElementById('msgBody').srcdoc = `<html><head><style>body{font-family:sans-serif;margin:20px;line-height:1.6;color:#333}img{max-width:100%}</style></head><body>${det.html || det.htmlBody || det.textBody}</body></html>`;
-            } catch (e) { showToast("Gagal memuat", "error"); }
+                document.getElementById('msgBody').srcdoc = `<html><head><style>body{font-family:sans-serif;margin:15px;line-height:1.5;font-size:14px;color:#333}img{max-width:100%;height:auto;}</style></head><body>${det.html}</body></html>`;
+            } catch (e) { showToast("Gagal muat", "error"); }
         }
 
         function closeReader() { document.getElementById('readerView').classList.add('hidden'); }
-        function copyEmail() { navigator.clipboard.writeText(currentEmail); showToast("Alamat Disalin!"); }
+        function copyEmail() { navigator.clipboard.writeText(currentEmail); showToast("Disalin!"); }
 
-       // Fungsi untuk memproses URL secara mendalam
-function handleDeepLink() {
-    const path = window.location.pathname; // Mengambil /webmail/fikri@akunin.my.id
-    
-    if (path.startsWith('/webmail/')) {
-        // Mengambil bagian setelah /webmail/
-        let rawPath = path.split('/webmail/')[1]; 
-        
-        if (rawPath) {
-            // Decode URL (untuk menangani karakter khusus seperti @)
-            rawPath = decodeURIComponent(rawPath);
+        window.onload = () => {
+            // 1. Prioritas: Cek Deep Link (/webmail/...)
+            const path = window.location.pathname;
+            if (path.startsWith('/webmail/')) {
+                let raw = decodeURIComponent(path.split('/webmail/')[1]);
+                if (raw) {
+                    const fullMail = raw.includes('@') ? raw : `${raw}@akunin.my.id`;
+                    startSession(fullMail);
+                    return;
+                }
+            }
             
-            let userPart = "";
-            let domainPart = "";
-
-            if (rawPath.includes('@')) {
-                // Jika user mengetik lengkap: fikri@akunin.my.id
-                [userPart, domainPart] = rawPath.split('@');
+            // 2. Cek Session Terakhir
+            if (currentEmail) {
+                renderView();
             } else {
-                // Jika hanya nama: fikri
-                userPart = rawPath;
-                domainPart = document.getElementById('domain').value; // Ambil default dari dropdown
-            }
-
-            // Update UI secara fisik
-            document.getElementById('username').value = userPart;
-            
-            // Pastikan domain yang ada di URL terpilih di dropdown
-            const domainSelect = document.getElementById('domain');
-            const options = Array.from(domainSelect.options);
-            const matchingOption = options.find(opt => opt.value === domainPart);
-            
-            if (matchingOption) {
-                domainSelect.value = domainPart;
-            }
-
-            // Jalankan fungsi update tampilan dan kunci (Lock)
-            updateDisplay();
-            toggleLock(); 
-            return true;
-        }
-    }
-    return false;
-}
-
-// Ganti window.onload lama kamu dengan ini
-window.onload = () => {
-    // Jalankan pengecekan deep link
-    const isRedirected = handleDeepLink();
-    
-    // Jika tidak ada link khusus, baru tampilkan pesan awal
-    if (!isRedirected) {
-        updateDisplay();
+                renderView();
             }
         };
-        document.getElementById('username').addEventListener('input', updateDisplay);
-        document.getElementById('domain').addEventListener('change', updateDisplay);
     </script>
 </body>
 </html>

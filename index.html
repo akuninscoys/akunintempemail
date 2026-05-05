@@ -246,14 +246,59 @@
         function closeReader() { document.getElementById('readerView').classList.add('hidden'); }
         function copyEmail() { navigator.clipboard.writeText(currentEmail); showToast("Alamat Disalin!"); }
 
-        window.onload = () => {
-            const p = window.location.pathname;
-            if (p.startsWith('/mailbox/')) {
-                const uUrl = p.split('/')[2];
-                if (uUrl) {
-                    document.getElementById('username').value = uUrl.split('@')[0];
-                    updateDisplay(); toggleLock();
-                }
+       // Fungsi untuk memproses URL secara mendalam
+function handleDeepLink() {
+    const path = window.location.pathname; // Mengambil /webmail/fikri@akunin.my.id
+    
+    if (path.startsWith('/webmail/')) {
+        // Mengambil bagian setelah /webmail/
+        let rawPath = path.split('/webmail/')[1]; 
+        
+        if (rawPath) {
+            // Decode URL (untuk menangani karakter khusus seperti @)
+            rawPath = decodeURIComponent(rawPath);
+            
+            let userPart = "";
+            let domainPart = "";
+
+            if (rawPath.includes('@')) {
+                // Jika user mengetik lengkap: fikri@akunin.my.id
+                [userPart, domainPart] = rawPath.split('@');
+            } else {
+                // Jika hanya nama: fikri
+                userPart = rawPath;
+                domainPart = document.getElementById('domain').value; // Ambil default dari dropdown
+            }
+
+            // Update UI secara fisik
+            document.getElementById('username').value = userPart;
+            
+            // Pastikan domain yang ada di URL terpilih di dropdown
+            const domainSelect = document.getElementById('domain');
+            const options = Array.from(domainSelect.options);
+            const matchingOption = options.find(opt => opt.value === domainPart);
+            
+            if (matchingOption) {
+                domainSelect.value = domainPart;
+            }
+
+            // Jalankan fungsi update tampilan dan kunci (Lock)
+            updateDisplay();
+            toggleLock(); 
+            return true;
+        }
+    }
+    return false;
+}
+
+// Ganti window.onload lama kamu dengan ini
+window.onload = () => {
+    // Jalankan pengecekan deep link
+    const isRedirected = handleDeepLink();
+    
+    // Jika tidak ada link khusus, baru tampilkan pesan awal
+    if (!isRedirected) {
+        updateDisplay();
             }
         };
         document.getElementById('username').addEventListener('input', updateDisplay);
